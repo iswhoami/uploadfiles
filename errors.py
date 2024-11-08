@@ -1,0 +1,2 @@
+class DBQueryException(Exception):
+    pass
