@@ -20,11 +20,41 @@ class Connection:
     def execute(self, sql, *args):
         try:
             self._cursor = self._conn.cursor()
-            self._cursor.execute(sql, args)
+            self._cursor.execute(sql, *args)
+            rows = self._cursor.fetchall()
+            if rows:
+                column_names = [description[0] for description in self._cursor.description]
+                result = [dict(zip(column_names, row)) for row in rows]
+                self._conn.commit()
+                return result
             self._conn.commit()
+        except sqlite3.Error as e:
+            logger.error('Run SQL-query, error: {}'.format(e))
+            raise DBQueryException(str(e))
+        finally:
+            self._cursor.close()
+
+    def execute_single_value(self, sql, *args):
+        try:
+            self._cursor = self._conn.cursor()
+            self._cursor.execute(sql, *args)
+            result = self._cursor.fetchone()[0]
+            self._conn.commit()
+            return result
+        except sqlite3.Error as e:
+            logger.error('Run SQL-query, error: {}'.format(e))
+            raise DBQueryException(str(e))
+        finally:
+            self._cursor.close()
+
+    def execute_one_row(self, sql, *args):
+        try:
+            self._cursor = self._conn.cursor()
+            self._cursor.execute(sql, *args)
             rows = self._cursor.fetchall()
             column_names = [description[0] for description in self._cursor.description]
-            result = [dict(zip(column_names, row)) for row in rows]
+            result = [dict(zip(column_names, row)) for row in rows][0]
+            self._conn.commit()
             return result
         except sqlite3.Error as e:
             logger.error('Run SQL-query, error: {}'.format(e))
@@ -35,7 +65,7 @@ class Connection:
     def execute_void(self, sql, *args):
         try:
             self._cursor = self._conn.cursor()
-            self._cursor.execute(sql, args)
+            self._cursor.execute(sql, *args)
             self._conn.commit()
         except sqlite3.Error as e:
             logger.error('Run SQL-query, error: {}'.format(e))
