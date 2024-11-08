@@ -2,6 +2,7 @@ import sqlite3
 
 from config import DB_PATH
 from errors import DBQueryException
+from logger import logger
 
 
 class Connection:
@@ -26,6 +27,7 @@ class Connection:
             result = [dict(zip(column_names, row)) for row in rows]
             return result
         except sqlite3.Error as e:
+            logger.error('Run SQL-query, error: {}'.format(e))
             raise DBQueryException(str(e))
         finally:
             self._cursor.close()
@@ -36,6 +38,7 @@ class Connection:
             self._cursor.execute(sql, args)
             self._conn.commit()
         except sqlite3.Error as e:
+            logger.error('Run SQL-query, error: {}'.format(e))
             raise DBQueryException(str(e))
         finally:
             self._cursor.close()
