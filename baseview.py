@@ -6,8 +6,6 @@ from connection import Connection
 
 class BaseView(MethodView):
 
-    EXTENSION = ['jpg', 'png']
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._conn = Connection()
