@@ -52,10 +52,11 @@ class Connection:
             self._cursor = self._conn.cursor()
             self._cursor.execute(sql, *args)
             rows = self._cursor.fetchall()
-            column_names = [description[0] for description in self._cursor.description]
-            result = [dict(zip(column_names, row)) for row in rows][0]
-            self._conn.commit()
-            return result
+            if rows:
+                column_names = [description[0] for description in self._cursor.description]
+                result = [dict(zip(column_names, row)) for row in rows][0]
+                self._conn.commit()
+                return result
         except sqlite3.Error as e:
             logger.error('Run SQL-query, error: {}'.format(e))
             raise DBQueryException(str(e))
