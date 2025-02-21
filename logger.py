@@ -3,7 +3,7 @@ import sys
 
 from config import LOG_PATH
 
-LOGGER_FORMAT = '[%(asctime)s]: [%(levelname)s]: [%(message)s]'
+LOGGER_FORMAT = '[%(asctime)s]: [%(levelname)s]: %(message)s'
 DATE_FORMAT = '%d.%m.%Y %H:%M:%S'
 
 logger = logging.getLogger('webserver')

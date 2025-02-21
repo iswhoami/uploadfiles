@@ -1,6 +1,6 @@
 from flask import Flask
 
-from routes import files
+from endpoints.routes import files
 
 
 class Webserver(Flask):
@@ -9,7 +9,7 @@ class Webserver(Flask):
         self._register_blueprints()
 
     def _register_blueprints(self):
-        self.register_blueprint(files, url_prefix='/api/files')
+        self.register_blueprint(files, url_prefix='/files')
 
 
 if __name__ == '__main__':
