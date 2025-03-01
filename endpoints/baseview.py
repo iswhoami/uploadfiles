@@ -2,7 +2,7 @@ from flask import request
 from flask.views import MethodView
 from werkzeug.exceptions import BadRequest
 
-from connection import Connection
+from core.connection import Connection
 
 
 class BaseView(MethodView):

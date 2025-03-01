@@ -1,8 +1,8 @@
 import sqlite3
 
-from config import DB_PATH
-from errors import DBQueryException
-from logger import logger
+from core.config import DB_PATH
+from core.errors import DBQueryException
+from core.logger import logger
 
 
 class Connection:

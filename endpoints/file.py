@@ -4,8 +4,8 @@ from datetime import datetime
 
 from flask import jsonify, make_response, send_file
 
-from baseview import BaseView
-from config import UPLOAD_FOLDER, ALLOWED_FILE_EXTENSIONS
+from endpoints.baseview import BaseView
+from core.config import UPLOAD_FOLDER, ALLOWED_FILE_EXTENSIONS
 
 
 class FileView(BaseView):

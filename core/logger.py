@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from config import LOG_PATH
+from core.config import LOG_PATH
 
 LOGGER_FORMAT = '[%(asctime)s]: [%(levelname)s]: %(message)s'
 DATE_FORMAT = '%d.%m.%Y %H:%M:%S'
