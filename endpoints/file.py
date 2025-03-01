@@ -5,7 +5,7 @@ from datetime import datetime
 from flask import jsonify, make_response, send_file
 
 from baseview import BaseView
-from config import UPLOAD_FOLDER
+from config import UPLOAD_FOLDER, ALLOWED_FILE_EXTENSIONS
 
 
 class FileView(BaseView):
@@ -18,7 +18,7 @@ class FileView(BaseView):
                                                        'FROM files '
                                                        'WHERE path = ?', (file_path,))
             return make_response(send_file(file_path, as_attachment=True,
-                                                            download_name=filename), 200)
+                                                      download_name=filename), 200)
         else:
             api_result = {
                 'status': False,
@@ -37,6 +37,13 @@ class FileUpload(BaseView):
         self.check_arg_required(file, 'file')
         # processing
         try:
+            extension = os.path.splitext(file.filename)[1]
+            if extension not in ALLOWED_FILE_EXTENSIONS:
+                api_result = {
+                    'result': False,
+                    'error': 'Unsupported file type, available: {}'.format(','.join(ALLOWED_FILE_EXTENSIONS))
+                }
+                return make_response(jsonify(api_result), 400)
             original_filename = file.filename
             new_filename = str(uuid.uuid4()) + os.path.splitext(file.filename)[1]
             today_date = datetime.today().strftime('%d-%m-%Y')
@@ -47,9 +54,9 @@ class FileUpload(BaseView):
 
             path = os.path.join(working_dir, new_filename)
             file.save(path)
-            self._conn.execute_void('INSERT INTO files (original_filename, new_filename, path) '
-                                    'VALUES (?, ?, ?)',
-                                    (original_filename, new_filename, path))
+            file_id = self._conn.execute_single_value('INSERT INTO files (original_filename, new_filename, path) '
+                                                      'VALUES (?, ?, ?) RETURNING file_id',
+                                                      (original_filename, new_filename, path))
         except Exception as e:
             api_result = {
                 'result': False,
@@ -59,6 +66,7 @@ class FileUpload(BaseView):
         else:
             api_result = {
                 'result': True,
+                'file_id': file_id,
                 'file_path': path,
                 'message': "uploaded"
             }
